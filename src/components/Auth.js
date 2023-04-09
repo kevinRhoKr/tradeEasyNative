@@ -1,132 +1,314 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useContext, useState } from 'react';
-import { StyleSheet, View, Text, Button, Alert, TextInput } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import React, { useContext, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  Button,
+  Pressable,
+  TextInput,
+} from "react-native";
 // import AuthContext from '../store/AuthContext';
-import { AuthContext } from '../store/AuthContextNew';
+import { AuthContext } from "../store/AuthContextNew";
 
 const Auth = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fName, setFName] = useState("");
+  const [lName, setLName] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [proximity, setProximity] = useState("");
+  const [authState, setAuthState] = useContext(AuthContext);
+  const [error, setError] = useState(false);
+  const [signUp, setSignUp] = useState(false);
+  const [doneSignUp, setDoneSignUp] = useState(false);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [authState, setAuthState] = useContext(AuthContext);
+  // const getDataUsingGet = () => {
+  //     //GET request
+  //     fetch('https://trade-easy.herokuapp.com/api/v1/hello', {
+  //       method: 'GET',
+  //       //Request Type
+  //     })
+  //       .then((response) => response.json())
+  //       //If response is in json then in success
+  //       .then((responseJson) => {
+  //         //Success
+  //         alert(JSON.stringify(responseJson));
+  //         console.log(responseJson);
+  //       })
+  //       //If response is not in json then in error
+  //       .catch((error) => {
+  //         //Error
+  //         alert(JSON.stringify(error));
+  //         console.error(error);
+  //       });
+  //   };
 
-    // const getDataUsingGet = () => {
-    //     //GET request
-    //     fetch('https://trade-easy.herokuapp.com/api/v1/hello', {
-    //       method: 'GET',
-    //       //Request Type
-    //     })
-    //       .then((response) => response.json())
-    //       //If response is in json then in success
-    //       .then((responseJson) => {
-    //         //Success
-    //         alert(JSON.stringify(responseJson));
-    //         console.log(responseJson);
-    //       })
-    //       //If response is not in json then in error
-    //       .catch((error) => {
-    //         //Error
-    //         alert(JSON.stringify(error));
-    //         console.error(error);
-    //       });
-    //   };
+  const changeModeHandler = () => {
+    setSignUp(!signUp);
+    setError(false);
+    setDoneSignUp(false);
+    setEmail("");
+    setPassword("");
+    setFName("");
+    setLName("");
+    setLatitude("");
+    setLongitude("");
+    setProximity("");
 
-    const logIn = () => {
-        console.log(email);
-        console.log(password);
-        fetch('https://trade-easy.herokuapp.com/auth/login', {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-    
-            body: JSON.stringify({
-                "inputObj": {
-                    "email": email,
-                    "password": password
-                }
-            }),
-          })
-            .then((response) => response.json())
-            .then((responseJson) => {
-              //Showing response message coming from server 
-              
-              if (typeof responseJson.access_token !== "undefined") {
-                // console.log("we got the token");
-                // authCtx.login(responseJson.access_token);
-                // console.log("authCtx.isLoggedIn:", authCtx.isLoggedIn);
-                setAuthState({
-                    token: responseJson.access_token,
-                    isLoggedIn: true
-                })
-              }
-              console.warn(responseJson);
-            })
-            .catch((error) => {
-            //display error message
-            console.log("ERRORRRRRRRR");
-             console.warn(error);
-            });
-      };
+  }
 
-    return (
-        <View style={styles.auth}>
-            <Text style={styles.text}>
-                TradeEasy
-            </Text>
-            <View>
-                <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#a9a9a9"
-                onChangeText={setEmail}
-                value={email}
-                >
-                </TextInput>
-                <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#a9a9a9"
-                onChangeText={setPassword}
-                value={password}
-                >
-                </TextInput>
-            </View>
-            <Button title="Login" onPress={logIn}></Button>
+  const signUpFunc = () => {
+
+
+    fetch("https://trade-easy.herokuapp.com/auth/signup", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        register_details: {
+          email: email,
+          password: password,
+          fname: fName,
+          lname: lName,
+          latitude: latitude,
+          longitude: longitude,
+          proximity: proximity,
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //Showing response message coming from server
+
+        if (typeof responseJson.email !== "undefined") {
+          // console.log("we got the token");
+          // authCtx.login(responseJson.access_token);
+          // console.log("authCtx.isLoggedIn:", authCtx.isLoggedIn);
+          setDoneSignUp(!doneSignUp);
+          changeModeHandler();
+
+        } else {
+          setError(true);
+        }
+
+        console.warn(responseJson);
+      })
+      .catch((error) => {
+        //display error message
+        console.log("ERRORRRRRRRR");
+        console.warn(error);
+      });
+
+  };
+
+  const logIn = () => {
+    console.log(email);
+    console.log(password);
+    setError(false);
+    fetch("https://trade-easy.herokuapp.com/auth/login", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        inputObj: {
+          email: email,
+          password: password,
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //Showing response message coming from server
+
+        if (typeof responseJson.access_token !== "undefined") {
+          // console.log("we got the token");
+          // authCtx.login(responseJson.access_token);
+          // console.log("authCtx.isLoggedIn:", authCtx.isLoggedIn);
+          setAuthState({
+            token: responseJson.access_token,
+            isLoggedIn: true,
+          });
+          setError(false);
+        } else {
+          setError(true);
+        }
+
+        console.warn(responseJson);
+      })
+      .catch((error) => {
+        //display error message
+        console.log("ERRORRRRRRRR");
+        console.warn(error);
+      });
+  };
+
+  return (
+    <ScrollView style={styles.auth} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+      {error && <Text style={styles.text2}>TradeEasy</Text>}
+      {!error && signUp && <Text style={styles.text3}>TradeEasy</Text>}
+      {!error && !signUp && <Text style={styles.text}>TradeEasy</Text>}
+
+      {/* <Text style={!error ? styles.text : !signUp ? styles.text3 : styles.text2}>TradeEasy</Text> */}
+      {error && (
+        <Text style={styles.error}>
+          Wrong credential. Please try loggin in again.
+        </Text>
+      )}
+      {!doneSignUp && (
+        <Text style={styles.successMsg}>
+            {"\n"}
+            Successfully signed up! {"\n"}
+            Please log in using your credentials
+        </Text>
+      )}
+      <View>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#a9a9a9"
+          onChangeText={setEmail}
+          value={email}
+        ></TextInput>
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#a9a9a9"
+          onChangeText={setPassword}
+          value={password}
+          secureTextEntry={true}
+        ></TextInput>
+      </View>
+
+      {signUp && (
+        <View>
+          <TextInput
+            style={styles.input}
+            placeholder="First Name"
+            placeholderTextColor="#a9a9a9"
+            onChangeText={setFName}
+            value={fName}
+          ></TextInput>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Last Name"
+            placeholderTextColor="#a9a9a9"
+            onChangeText={setLName}
+            value={lName}
+          ></TextInput>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Latitude"
+            placeholderTextColor="#a9a9a9"
+            onChangeText={setLatitude}
+            value={latitude}
+          ></TextInput>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Longitude"
+            placeholderTextColor="#a9a9a9"
+            onChangeText={setLongitude}
+            value={longitude}
+          ></TextInput>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Proximity"
+            placeholderTextColor="#a9a9a9"
+            onChangeText={setProximity}
+            value={proximity}
+          ></TextInput>
         </View>
-    )
-}
+      )}
+
+      {!signUp ? (
+        <View>
+          <Button title="Login" onPress={logIn}></Button>
+          <Button
+            title="Don't have an account? Sign up today!"
+            style={styles.button}
+            onPress={changeModeHandler}
+          ></Button>
+        </View>
+      ) : (
+        <View>
+          <Button title="Sign up" onPress={signUpFunc}></Button>
+          <Button title="Go back to log in" onPress={changeModeHandler}></Button>
+        </View>
+      )}
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
+  auth: {
+    width: "100%",
+    height: "100%",
+    margin: "auto",
+    backgroundColor: "#D1D4E4",
+  },
 
-    auth: {
-        width: "100%",
-        height: "100%",
-        margin: "auto",
-        justifyContent: 'center',
-        backgroundColor: '#D1D4E4',
-    },
+  error: {
+    textAlign: "center",
+    color: "#D0312D",
+    padding: 10,
+    margin: 10,
+  },
 
-    text: {
-        textAlign: "center",
-        position: "absolute",
-        top: 250,
-        left: 85,
-        padding: 20,
-        fontSize: 40
-    },
+  text: {
+    textAlign: "center",
+    position: "absolute",
+    top: 250,
+    left: 85,
+    padding: 20,
+    fontSize: 40,
+  },
 
-    input: {
-        alignSelf: "center",
-        borderColor: "gray",
-        width: "60%",
-        borderWidth: 1,
-        borderRadius: 10, 
-        padding:10,
-        margin: 10,
-    }
-})
+  text2: {
+    textAlign: "center",
+    position: "absolute",
+    top: 240,
+    left: 85,
+    padding: 20,
+    fontSize: 40,
+  },
 
+  input: {
+    alignSelf: "center",
+    borderColor: "gray",
+    width: "60%",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
+  },
+
+  text3: {
+    textAlign: "center",
+    position: "absolute",
+    top: 80,
+    left: 85,
+    padding: 20,
+    fontSize: 40,
+  },
+
+  successMsg: {
+    textAlign: "center",
+    color: "#228B22",
+    padding: 10,
+    margin: 10,
+  }
+});
 
 export default Auth;

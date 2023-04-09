@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+// import { useFonts, Jost_500Medium } from "@expo-google-fonts/jost";
 import {
   StyleSheet,
   View,
@@ -8,22 +9,60 @@ import {
   Button,
   Pressable,
   TextInput,
+  Alert,
 } from "react-native";
 // import AuthContext from '../store/AuthContext';
 import { AuthContext } from "../store/AuthContextNew";
+// import AppLoading from "expo-app-loading";
+// import GetLocation from 'react-native-get-location'
+import * as Location from "expo-location";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
   const [proximity, setProximity] = useState("");
   const [authState, setAuthState] = useContext(AuthContext);
   const [error, setError] = useState(false);
   const [signUp, setSignUp] = useState(false);
   const [doneSignUp, setDoneSignUp] = useState(false);
+  const [firstRender, setFirstRender] = useState(true);
+  const [isLoadingVisible, setIsLoadingVisible] = useState(false);
+
+  const loadingScreen = () => {
+    setIsLoadingVisible(true);
+
+    setTimeout(() => {
+        setIsLoadingVisible(false);
+    }, 10000);
+  };
+
+  useEffect(() => {
+    if (firstRender) {
+      loadingScreen();
+
+      setFirstRender(false);
+      console.log(firstRender);
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert("Permission to access location was denied");
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setLatitude(location.coords.latitude);
+        setLongitude(location.coords.longitude);
+        console.log(location.coords.longitude);
+        console.log(location.coords.latitude);
+      })();
+    }
+  }, [firstRender]);
+
+  //   let [fontsLoaded] = useFonts({ Jost_500Medium });
 
   // const getDataUsingGet = () => {
   //     //GET request
@@ -57,12 +96,9 @@ const Auth = () => {
     setLatitude("");
     setLongitude("");
     setProximity("");
-
-  }
+  };
 
   const signUpFunc = () => {
-
-
     fetch("https://trade-easy.herokuapp.com/auth/signup", {
       method: "POST",
       headers: {
@@ -91,10 +127,19 @@ const Auth = () => {
           // authCtx.login(responseJson.access_token);
           // console.log("authCtx.isLoggedIn:", authCtx.isLoggedIn);
           setDoneSignUp(!doneSignUp);
+          Alert.alert(
+            "Successful signup! Please log in using your credentials!"
+          );
           changeModeHandler();
-
         } else {
-          setError(true);
+          Alert.alert("Already existing email. Please try again. ");
+          setEmail("");
+          setPassword("");
+          setFName("");
+          setLName("");
+          setLatitude("");
+          setLongitude("");
+          setProximity("");
         }
 
         console.warn(responseJson);
@@ -104,7 +149,6 @@ const Auth = () => {
         console.log("ERRORRRRRRRR");
         console.warn(error);
       });
-
   };
 
   const logIn = () => {
@@ -151,104 +195,112 @@ const Auth = () => {
       });
   };
 
+  //   if (!fontsLoaded) {
+  //     return <AppLoading></AppLoading>;
+  //   } else {
   return (
-    <ScrollView style={styles.auth} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-      {error && <Text style={styles.text2}>TradeEasy</Text>}
-      {!error && signUp && <Text style={styles.text3}>TradeEasy</Text>}
-      {!error && !signUp && <Text style={styles.text}>TradeEasy</Text>}
-
-      {/* <Text style={!error ? styles.text : !signUp ? styles.text3 : styles.text2}>TradeEasy</Text> */}
-      {error && (
-        <Text style={styles.error}>
-          Wrong credential. Please try loggin in again.
-        </Text>
-      )}
-      {!doneSignUp && (
-        <Text style={styles.successMsg}>
-            {"\n"}
-            Successfully signed up! {"\n"}
-            Please log in using your credentials
-        </Text>
-      )}
-      <View>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#a9a9a9"
-          onChangeText={setEmail}
-          value={email}
-        ></TextInput>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#a9a9a9"
-          onChangeText={setPassword}
-          value={password}
-          secureTextEntry={true}
-        ></TextInput>
-      </View>
-
-      {signUp && (
+    <ScrollView
+      style={styles.auth}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+    >
+      {isLoadingVisible && <Text style={styles.load}>App Loading.... {"\n"}Please wait to load</Text>}
+      {!isLoadingVisible && (
         <View>
-          <TextInput
-            style={styles.input}
-            placeholder="First Name"
-            placeholderTextColor="#a9a9a9"
-            onChangeText={setFName}
-            value={fName}
-          ></TextInput>
+          {error && <Text style={styles.text2}>TradeEasy</Text>}
+          {!error && signUp && <Text style={styles.text3}>TradeEasy</Text>}
+          {!error && !signUp && <Text style={styles.text}>TradeEasy</Text>}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Last Name"
-            placeholderTextColor="#a9a9a9"
-            onChangeText={setLName}
-            value={lName}
-          ></TextInput>
+          {/* <Text style={!error ? styles.text : !signUp ? styles.text3 : styles.text2}>TradeEasy</Text> */}
+          {error && (
+            <Text style={styles.error}>
+              Wrong credential. Please try loggin in again.
+            </Text>
+          )}
+          {doneSignUp && (
+            <Text style={styles.successMsg}>
+              {"\n"}
+              Successfully signed up! {"\n"}
+              Please log in using your credentials
+            </Text>
+          )}
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#a9a9a9"
+              onChangeText={setEmail}
+              value={email}
+            ></TextInput>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#a9a9a9"
+              onChangeText={setPassword}
+              value={password}
+              secureTextEntry={true}
+            ></TextInput>
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Latitude"
-            placeholderTextColor="#a9a9a9"
-            onChangeText={setLatitude}
-            value={latitude}
-          ></TextInput>
+          {signUp && (
+            <View>
+              <TextInput
+                style={styles.input}
+                placeholder="First Name"
+                placeholderTextColor="#a9a9a9"
+                onChangeText={setFName}
+                value={fName}
+              ></TextInput>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Longitude"
-            placeholderTextColor="#a9a9a9"
-            onChangeText={setLongitude}
-            value={longitude}
-          ></TextInput>
+              <TextInput
+                style={styles.input}
+                placeholder="Last Name"
+                placeholderTextColor="#a9a9a9"
+                onChangeText={setLName}
+                value={lName}
+              ></TextInput>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Proximity"
-            placeholderTextColor="#a9a9a9"
-            onChangeText={setProximity}
-            value={proximity}
-          ></TextInput>
-        </View>
-      )}
+              <TextInput
+                style={styles.input}
+                placeholder="Proximity"
+                placeholderTextColor="#a9a9a9"
+                onChangeText={setProximity}
+                value={proximity}
+              ></TextInput>
+            </View>
+          )}
 
-      {!signUp ? (
-        <View>
-          <Button title="Login" onPress={logIn}></Button>
-          <Button
-            title="Don't have an account? Sign up today!"
-            style={styles.button}
-            onPress={changeModeHandler}
-          ></Button>
-        </View>
-      ) : (
-        <View>
-          <Button title="Sign up" onPress={signUpFunc}></Button>
-          <Button title="Go back to log in" onPress={changeModeHandler}></Button>
+          {!signUp ? (
+            <View>
+              <Button
+                title="Login"
+                onPress={logIn}
+                style={{ textStyle: "AppleSDGothicNeo-SemiBold" }}
+              ></Button>
+              <Button
+                title="Don't have an account? Sign up today!"
+                style={{ textStyle: "AppleSDGothicNeo-SemiBold" }}
+                onPress={changeModeHandler}
+              ></Button>
+            </View>
+          ) : (
+            <View>
+              <Button
+                title="Sign up"
+                onPress={signUpFunc}
+                style={{ textStyle: "AppleSDGothicNeo-SemiBold" }}
+              ></Button>
+              <Button
+                title="Go back to log in"
+                onPress={changeModeHandler}
+              ></Button>
+            </View>
+          )}
         </View>
       )}
     </ScrollView>
   );
+
+  //}
 };
 
 const styles = StyleSheet.create({
@@ -269,10 +321,11 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     position: "absolute",
-    top: 250,
+    top: -100,
     left: 85,
     padding: 20,
     fontSize: 40,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
   },
 
   text2: {
@@ -282,6 +335,7 @@ const styles = StyleSheet.create({
     left: 85,
     padding: 20,
     fontSize: 40,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
   },
 
   input: {
@@ -292,15 +346,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin: 10,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
   },
 
   text3: {
     textAlign: "center",
     position: "absolute",
-    top: 80,
+    top: -80,
     left: 85,
     padding: 20,
     fontSize: 40,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
   },
 
   successMsg: {
@@ -308,6 +364,13 @@ const styles = StyleSheet.create({
     color: "#228B22",
     padding: 10,
     margin: 10,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+  },
+
+  load: {
+    textAlign: "center",
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+    fontSize: 20
   }
 });
 

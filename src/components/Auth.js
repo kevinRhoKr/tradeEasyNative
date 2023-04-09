@@ -1,27 +1,73 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, View, Text, Button, Alert, TextInput } from 'react-native';
+// import AuthContext from '../store/AuthContext';
+import { AuthContext } from '../store/AuthContextNew';
 
 const Auth = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [authState, setAuthState] = useContext(AuthContext);
 
-    const logIn = async () => {
-        console.log("here");
-        const resp = await fetch("http://127.0.0.1:5000/auth/login", {
-            method: "POST",
-            headers: new Headers({
-                "Content-Type": "application/json"
-            }),
+    // const getDataUsingGet = () => {
+    //     //GET request
+    //     fetch('https://trade-easy.herokuapp.com/api/v1/hello', {
+    //       method: 'GET',
+    //       //Request Type
+    //     })
+    //       .then((response) => response.json())
+    //       //If response is in json then in success
+    //       .then((responseJson) => {
+    //         //Success
+    //         alert(JSON.stringify(responseJson));
+    //         console.log(responseJson);
+    //       })
+    //       //If response is not in json then in error
+    //       .catch((error) => {
+    //         //Error
+    //         alert(JSON.stringify(error));
+    //         console.error(error);
+    //       });
+    //   };
+
+    const logIn = () => {
+        console.log(email);
+        console.log(password);
+        fetch('https://trade-easy.herokuapp.com/auth/login', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+    
             body: JSON.stringify({
-                "email": email,
-                "password": password
+                "inputObj": {
+                    "email": email,
+                    "password": password
+                }
+            }),
+          })
+            .then((response) => response.json())
+            .then((responseJson) => {
+              //Showing response message coming from server 
+              
+              if (typeof responseJson.access_token !== "undefined") {
+                // console.log("we got the token");
+                // authCtx.login(responseJson.access_token);
+                // console.log("authCtx.isLoggedIn:", authCtx.isLoggedIn);
+                setAuthState({
+                    token: responseJson.access_token,
+                    isLoggedIn: true
+                })
+              }
+              console.warn(responseJson);
             })
-        });
-        const data = await resp.json();
-        Alert.alert(data);
-        console.log(data);
+            .catch((error) => {
+            //display error message
+            console.log("ERRORRRRRRRR");
+             console.warn(error);
+            });
       };
 
     return (

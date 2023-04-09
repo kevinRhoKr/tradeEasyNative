@@ -6,82 +6,14 @@ import Auth from "./src/components/Auth";
 import { AuthContext } from "./src/store/AuthContextNew";
 // import { AuthContextProvider } from "./src/store/AuthContext";
 import AuthPage from "./src/pages/AuthPage";
-import HomePage from "./src/pages/HomePage";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { AntDesign } from "@expo/vector-icons"
+import { MyTabs } from "./src/components/NavBar";
 
 const image = {
   uri: "https://www.setaswall.com/wp-content/uploads/2021/06/Gradient-Phone-Wallpaper-009.jpg",
 };
 
-function MarketScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Market!</Text>
-    </View>
-  );
-}
-
-function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
-
-function ChatsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Chats!</Text>
-    </View>
-  )
-}
-
-const Tab = createBottomTabNavigator();
-
-function MyTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === "Market") {
-            iconName = focused
-              ? "appstore1"
-              : "appstore-o";
-
-              return <AntDesign name={iconName} size={size} color={color} />;
-
-          } else if (route.name === "Settings") {
-            iconName = focused ? "ios-list" : "ios-list-outline";
-          } else if (route.name === "Chats") {
-            iconName = focused ? "chatbox-ellipses-sharp" : "chatbox-ellipses-outline";
-          }
-
-          // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: "tomato",
-        tabBarInactiveTintColor: "gray",
-      })}
-    >
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="Market" component={MarketScreen} />
-      <Tab.Screen name="Chats" component={ChatsScreen} />
-    </Tab.Navigator>
-  );
-}
-
 export default function App() {
-  // const authCtx = useContext(AuthContext);
-  /*
- token: "",
-        isLoggedIn: false
-  */
   const [authState, setAuthState] = useState({
     token: "",
     isLoggedIn: false,

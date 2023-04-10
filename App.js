@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, ImageBackground } from "react-native";
+import { StyleSheet, Text, View, ImageBackground, ScrollView } from "react-native";
 import Auth from "./src/components/Auth";
 // import AuthContext from "./src/store/AuthContext";
 import { AuthContext } from "./src/store/AuthContextNew";
@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#C7F5E8",
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+
   },
 
   image: {

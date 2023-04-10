@@ -142,7 +142,6 @@ const Auth = () => {
           setProximity("");
         }
 
-        console.warn(responseJson);
       })
       .catch((error) => {
         //display error message
@@ -186,7 +185,6 @@ const Auth = () => {
           setError(true);
         }
 
-        console.warn(responseJson);
       })
       .catch((error) => {
         //display error message

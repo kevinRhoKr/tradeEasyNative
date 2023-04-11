@@ -1,10 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, ImageBackground, ScrollView } from "react-native";
-import Auth from "./src/components/Auth";
-// import AuthContext from "./src/store/AuthContext";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { AuthContext } from "./src/store/AuthContextNew";
-// import { AuthContextProvider } from "./src/store/AuthContext";
 import AuthPage from "./src/pages/AuthPage";
 import { NavigationContainer } from "@react-navigation/native";
 import { MyTabs } from "./src/components/NavBar";
@@ -37,7 +34,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#C7F5E8",
     fontFamily: "AppleSDGothicNeo-SemiBold",
-
   },
 
   image: {

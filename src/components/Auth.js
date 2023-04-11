@@ -93,12 +93,24 @@ const Auth = () => {
     setPassword("");
     setFName("");
     setLName("");
-    setLatitude("");
-    setLongitude("");
     setProximity("");
   };
 
   const signUpFunc = () => {
+
+    const register_details =  {
+      email: email,
+      password: password,
+      fname: fName,
+      lname: lName,
+      latitude: latitude,
+      longitude: longitude,
+      proximity: proximity,
+    }
+
+    console.log(register_details);
+
+
     fetch("https://trade-easy.herokuapp.com/auth/signup", {
       method: "POST",
       headers: {

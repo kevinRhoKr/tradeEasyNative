@@ -1,9 +1,132 @@
-import React from "react";
-import { Text, View, Pressable, StyleSheet, ScrollView } from "react-native";
+import React, { useContext, useState } from "react";
+import {
+  Text,
+  View,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Slider,
+} from "react-native";
+import { AuthContext } from "../store/AuthContextNew";
 
 export function SettingPage() {
+  const [authState, setAuthState] = useContext(AuthContext);
+  const [error, setError] = useState(false);
+  const [proximity, setProximity] = useState(5);
+
+  const handleLogout = async () => {
+    fetch("https://trade-easy.herokuapp.com/auth/logout", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    })
+
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.msg); // logout successful
+        setAuthState({
+          token: null,
+          isLoggedIn: false,
+        });
+      })
+      .catch((error) => {
+        //display error message
+        console.log("Logout error");
+        console.warn(error);
+      });
+  };
+
+  const handleReportUser = async () => {
+      //this will be reported user email
+      const email = "asdf";
+      fetch("https://trade-easy.herokuapp.com/api/v1/reportUser", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+          Authorization: `Bearer ${authState.token}`,
+      },
+      body: JSON.stringify({ email }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data);
+        alert("User reported successfully!");
+      })
+    .catch((error) => {
+        //display error message
+        console.log("Report user error");
+        console.warn(error);
+      });
+  };
+
+  const handleReportItem = async () => {
+      //this will be reported item_id
+      const item_id = 1;
+      fetch("https://trade-easy.herokuapp.com/api/v1/reportItem", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+          Authorization: `Bearer ${authState.token}`,
+      },
+      body: JSON.stringify({ item_id }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data);
+        alert("Item reported successfully!");
+
+      })
+    .catch((error) => {
+        //display error message
+        console.log("Report item error");
+        console.warn(error);
+      });
+  };
+
+  const handleProximityChange = (value) => {
+    setProximity(value);
+  };
+
+
+    const handleApplyChanges = async () => {
+    fetch("https://trade-easy.herokuapp.com/api/v1/changeProximity", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+          Authorization: `Bearer ${authState.token}`,
+      },
+      body: JSON.stringify({ proximity }),
+    })
+
+
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data);
+        alert("Proximity sucessfully changed to "+proximity+" miles");
+      })
+    .catch((error) => {
+        //display error message
+        console.log("Change proximity error");
+        console.warn(error);
+      });
+
+};
+
+
+
+
   return (
     <ScrollView style={{ flex: 1, padding: 50 }}>
+      {/*  need api call to get name and current proximity*/}
+      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Hello {authState.name}</Text>
+
+
       <Pressable
         style={({ pressed }) => [
           {
@@ -11,9 +134,58 @@ export function SettingPage() {
           },
           styles.button,
         ]}
+        onPress={handleLogout}
       >
         <Text style={styles.text}>Log out</Text>
       </Pressable>
+
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#00FFFF" : "#008080",
+          },
+          styles.button,
+        ]}
+        onPress={handleReportUser}
+      >
+        <Text style={styles.text}>Report User</Text>
+      </Pressable>
+
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#00FFFF" : "#008080",
+          },
+          styles.button,
+        ]}
+        onPress={handleReportItem}
+      >
+        <Text style={styles.text}>Report Item</Text>
+      </Pressable>
+
+    <View style={{ marginVertical: 10 }}>
+        <Text style={{ fontSize: 16 }}>Location Proximity</Text>
+        <Slider
+          minimumValue={1}
+          maximumValue={15}
+          step={1}
+          value={proximity}
+          onValueChange={handleProximityChange}
+        />
+        <Text>{proximity} miles</Text>
+        <Pressable
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed ? "#00FFFF" : "#008080",
+            },
+            styles.button,
+          ]}
+          onPress={handleApplyChanges}
+        >
+          <Text style={styles.text}>Change Proximity</Text>
+        </Pressable>
+
+      </View>
     </ScrollView>
   );
 }
@@ -25,6 +197,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     alignItems: "center",
+    marginVertical: 10,
   },
   text: {
     fontSize: 16,

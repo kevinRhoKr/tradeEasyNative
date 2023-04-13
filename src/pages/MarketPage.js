@@ -12,18 +12,19 @@ import {
 import TinderSwipe from "../components/TinderSwipe";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-// import { S3 } from "aws-sdk";
-// import RNFetchBlob from "rn-fetch-blob";
-// import { v4 as uuidv4 } from "uuid";
-// import * as config from "../../keys.json";
+import { S3 } from "aws-sdk/dist/aws-sdk-react-native";
+import * as config from "../../keys.json";
 
-// const s3options = {
-//   bucket: config.bucket,
-//   region: config.region,
-//   accessKey: config.accessKeyId,
-//   secretKey: config.secretAccessKey,
-//   successActionStatus: config.successActionStatus,
-// };
+
+const accessKeyId = config.accessKeyId;
+const secretAccessKey = config.secretAccessKey;
+const region = config.region; 
+
+const s3 = new S3({
+  accessKeyId,
+  secretAccessKey,
+  region,
+});
 
 export function MarketPage() {
   const iconName = "plussquare";
@@ -39,35 +40,32 @@ export function MarketPage() {
   };
 
   const uploadFileToS3 = async (fileUri) => {
-    // const uuid = uuidv4();
-    // const fileType = fileUri.substr(fileUri.lastIndexOf(".") + 1);
-    // const fileName = `${uuid}.${fileType}`;
-    // const contentType = `image/${fileType}`;
+    const fileExtension = fileUri.split(".").pop();
 
-    // const s3url = `https://${s3options.bucket}.s3.${s3options.region}.amazonaws.com/${fileName}`;
+    const fileName = `${new Date().getTime()}.${fileExtension}`;
 
-    // const file = await RNFetchBlob.fs.readFile(fileUri, "base64");
-    // const data = `data:${contentType};base64,${file}`;
+    Platform.OS === "ios" ? fileUri.replace("file://", "") : fileUri;
 
-    // const response = await RNFetchBlob.config({
-    //   trusty: true,
-    //   timeout: 60000,
-    //   appendExt: fileType,
-    // }).fetch(
-    //   "PUT",
-    //   s3url,
-    //   {
-    //     "Content-Type": contentType,
-    //     "x-amz-acl": "public-read",
-    //     "x-amz-date": new Date().toISOString(),
-    //     Authorization: `AWS ${s3options.accessKey}:${s3options.secretKey}`,
-    //   },
-    //   data
-    // );
 
-    // console.log(response);
+    try {
 
-    // return response;
+      const res = await fetch(fileUri);
+      const blob = await res.blob();
+
+      const params = {
+          Bucket: config.bucket,
+          Key: fileName,
+          Body: blob,
+        };
+
+      const response = await s3.upload(params).promise();
+      console.log("File uploaded successfully:", response.Location);
+
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+
+    console.log("done");
   };
 
   const pickImage = async () => {
@@ -83,6 +81,7 @@ export function MarketPage() {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      //console.log(result.assets[0].uri.split('/').pop(), Date.now())
     }
   };
 

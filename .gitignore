@@ -56,3 +56,5 @@ dist/
 
 # TradeEasy
 config.json
+yarn.lock
+keys.json

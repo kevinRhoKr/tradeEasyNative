@@ -41,7 +41,7 @@ export function SettingPage() {
 
   const handleReportUser = async () => {
       //this will be reported user email
-      const email = "asdf";
+      const email = "heroku@gmail.com";
       fetch("https://trade-easy.herokuapp.com/api/v1/reportUser", {
       method: "PUT",
       headers: {
@@ -49,7 +49,7 @@ export function SettingPage() {
         "Content-Type": "application/json",
           Authorization: `Bearer ${authState.token}`,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: email }),
     })
     .then((response) => response.json())
     .then((data) => {
@@ -73,7 +73,7 @@ export function SettingPage() {
         "Content-Type": "application/json",
           Authorization: `Bearer ${authState.token}`,
       },
-      body: JSON.stringify({ item_id }),
+      body: JSON.stringify({ item_id: item_id }),
     })
     .then((response) => response.json())
     .then((data) => {
@@ -101,7 +101,7 @@ export function SettingPage() {
         "Content-Type": "application/json",
           Authorization: `Bearer ${authState.token}`,
       },
-      body: JSON.stringify({ proximity }),
+      body: JSON.stringify({ proximity: proximity }),
     })
 
 

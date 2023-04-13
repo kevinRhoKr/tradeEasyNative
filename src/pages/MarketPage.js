@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Pressable,
   Text,
@@ -8,17 +8,19 @@ import {
   Image,
   Button,
   Modal,
+  TextInput,
+  Alert,
 } from "react-native";
 import TinderSwipe from "../components/TinderSwipe";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { S3 } from "aws-sdk/dist/aws-sdk-react-native";
 import * as config from "../../keys.json";
-
+import { AuthContext } from "../store/AuthContextNew";
 
 const accessKeyId = config.accessKeyId;
 const secretAccessKey = config.secretAccessKey;
-const region = config.region; 
+const region = config.region;
 
 const s3 = new S3({
   accessKeyId,
@@ -31,12 +33,21 @@ export function MarketPage() {
   const [isPressed, setIsPressed] = useState(false);
   const [image, setImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
-  console.log("image uri:", image);
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [authState, setAuthState] = useContext(AuthContext);
 
   const pressed = () => {
     setIsPressed(!isPressed);
     setModalVisible(true);
+  };
+
+  const exit = () => {
+    setIsPressed(!isPressed);
+    setModalVisible(false);
+    setName("");
+    setDesc("");
+    setImage(null);
   };
 
   const uploadFileToS3 = async (fileUri) => {
@@ -46,26 +57,56 @@ export function MarketPage() {
 
     Platform.OS === "ios" ? fileUri.replace("file://", "") : fileUri;
 
+    let link = "";
 
     try {
-
       const res = await fetch(fileUri);
       const blob = await res.blob();
 
       const params = {
-          Bucket: config.bucket,
-          Key: fileName,
-          Body: blob,
-        };
+        Bucket: config.bucket,
+        Key: fileName,
+        Body: blob,
+      };
 
       const response = await s3.upload(params).promise();
       console.log("File uploaded successfully:", response.Location);
-
+      link = response.Location;
     } catch (error) {
       console.error("Error uploading file:", error);
     }
 
-    console.log("done");
+    console.log("Now sending data to our flask backend...");
+
+    fetch("https://trade-easy.herokuapp.com/api/v1/newPost", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authState.token}`,
+      },
+
+      body: JSON.stringify({
+        name: name,
+        description: desc,
+        image: link,
+      }),
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        Alert.alert("Item successfully uploaded!");
+        setModalVisible(!modalVisible);
+      })
+      .catch((error) => {
+        //display error message
+        console.log("ERRORRRRRRRR");
+        console.warn(error);
+      });
+
+    setName("");
+    setDesc("");
+    setImage(null);
   };
 
   const pickImage = async () => {
@@ -87,6 +128,15 @@ export function MarketPage() {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <AntDesign
+        name={iconName}
+        size={50}
+        color={isPressed ? "#62CA62" : "green"}
+        onPress={pressed}
+        style={styles.button2}
+      />
+      <TinderSwipe></TinderSwipe>
+
       <View style={styles.centeredView}>
         <Modal
           animationType="slide"
@@ -104,6 +154,23 @@ export function MarketPage() {
                   alignItems: "center",
                 }}
               >
+                <TextInput
+                  style={styles.input}
+                  placeholder="Name"
+                  placeholderTextColor="#a9a9a9"
+                  onChangeText={setName}
+                  value={name}
+                ></TextInput>
+                <TextInput
+                  editable
+                  multiline
+                  numberOfLines={5}
+                  style={styles.input}
+                  placeholder="Description"
+                  placeholderTextColor="#a9a9a9"
+                  onChangeText={setDesc}
+                  value={desc}
+                ></TextInput>
                 <Button
                   title="Pick an image from camera roll"
                   onPress={pickImage}
@@ -115,31 +182,23 @@ export function MarketPage() {
                   />
                 )}
               </View>
+
               <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
+                style={[styles.button, styles.buttonUpload]}
+                onPress={() => uploadFileToS3(image)}
               >
-                <Text style={styles.textStyle}>Exit</Text>
+                <Text style={styles.textStyle}>Create new item</Text>
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => uploadFileToS3(image)}
+                onPress={exit}
               >
-                <Text style={styles.textStyle}>Upload</Text>
+                <Text style={styles.textStyle}>Cancel</Text>
               </Pressable>
             </View>
           </View>
         </Modal>
-        <AntDesign
-          name={iconName}
-          size={50}
-          color={isPressed ? "#62CA62" : "green"}
-          onPress={pressed}
-          style={styles.button2}
-        />
       </View>
-
-      <TinderSwipe></TinderSwipe>
     </View>
   );
 }
@@ -152,14 +211,13 @@ const styles = StyleSheet.create({
   },
 
   button2: {
-    paddingVertical: 12,
+    paddingVertical: 50,
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
     alignItems: "center",
-    position: "absolute",
-    bottom: 60,
   },
+
   text: {
     fontSize: 16,
     lineHeight: 21,
@@ -198,15 +256,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#F194FF",
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "red",
+  },
+  buttonUpload: {
+    backgroundColor: "green",
   },
   textStyle: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
   },
+
   modalText: {
     marginBottom: 15,
     textAlign: "center",
   },
+
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+  },
+
 });

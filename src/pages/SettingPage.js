@@ -23,7 +23,6 @@ export function SettingPage() {
       },
       body: JSON.stringify({}),
     })
-
       .then((response) => response.json())
       .then((data) => {
         console.log(data.msg); // logout successful
@@ -40,23 +39,23 @@ export function SettingPage() {
   };
 
   const handleReportUser = async () => {
-      //this will be reported user email
-      const email = "heroku@gmail.com";
-      fetch("https://trade-easy.herokuapp.com/api/v1/reportUser", {
+    //this will be reported user email
+    const email = "heroku@gmail.com";
+    fetch("https://trade-easy.herokuapp.com/api/v1/reportUser", {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-          Authorization: `Bearer ${authState.token}`,
+        Authorization: `Bearer ${authState.token}`,
       },
       body: JSON.stringify({ email: email }),
     })
-    .then((response) => response.json())
-    .then((data) => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
         alert("User reported successfully!");
       })
-    .catch((error) => {
+      .catch((error) => {
         //display error message
         console.log("Report user error");
         console.warn(error);
@@ -64,24 +63,23 @@ export function SettingPage() {
   };
 
   const handleReportItem = async () => {
-      //this will be reported item_id
-      const item_id = 1;
-      fetch("https://trade-easy.herokuapp.com/api/v1/reportItem", {
+    //this will be reported item_id
+    const item_id = 1;
+    fetch("https://trade-easy.herokuapp.com/api/v1/reportItem", {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-          Authorization: `Bearer ${authState.token}`,
+        Authorization: `Bearer ${authState.token}`,
       },
       body: JSON.stringify({ item_id: item_id }),
     })
-    .then((response) => response.json())
-    .then((data) => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
         alert("Item reported successfully!");
-
       })
-    .catch((error) => {
+      .catch((error) => {
         //display error message
         console.log("Report item error");
         console.warn(error);
@@ -92,40 +90,34 @@ export function SettingPage() {
     setProximity(value);
   };
 
-
-    const handleApplyChanges = async () => {
+  const handleApplyChanges = async () => {
     fetch("https://trade-easy.herokuapp.com/api/v1/changeProximity", {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-          Authorization: `Bearer ${authState.token}`,
+        Authorization: `Bearer ${authState.token}`,
       },
       body: JSON.stringify({ proximity: proximity }),
     })
-
-
-    .then((response) => response.json())
-    .then((data) => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
-        alert("Proximity sucessfully changed to "+proximity+" miles");
+        alert("Proximity sucessfully changed to " + proximity + " miles");
       })
-    .catch((error) => {
+      .catch((error) => {
         //display error message
         console.log("Change proximity error");
         console.warn(error);
       });
-
-};
-
-
-
+  };
 
   return (
     <ScrollView style={{ flex: 1, padding: 50 }}>
       {/*  need api call to get name and current proximity*/}
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Hello {authState.name}</Text>
-
+      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+        Hello {authState.name}
+      </Text>
 
       <Pressable
         style={({ pressed }) => [
@@ -163,7 +155,7 @@ export function SettingPage() {
         <Text style={styles.text}>Report Item</Text>
       </Pressable>
 
-    <View style={{ marginVertical: 10 }}>
+      <View style={{ marginVertical: 10 }}>
         <Text style={{ fontSize: 16 }}>Location Proximity</Text>
         <Slider
           minimumValue={1}
@@ -184,7 +176,6 @@ export function SettingPage() {
         >
           <Text style={styles.text}>Change Proximity</Text>
         </Pressable>
-
       </View>
     </ScrollView>
   );

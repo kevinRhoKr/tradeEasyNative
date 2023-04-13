@@ -32,6 +32,9 @@ const Auth = () => {
   const [firstRender, setFirstRender] = useState(true);
   const [isLoadingVisible, setIsLoadingVisible] = useState(false);
 
+  console.log(longitude);
+  console.log(latitude);
+
   const loadingScreen = () => {
     setIsLoadingVisible(true);
 
@@ -56,8 +59,8 @@ const Auth = () => {
         let location = await Location.getCurrentPositionAsync({});
         setLatitude(location.coords.latitude);
         setLongitude(location.coords.longitude);
-        console.log(location.coords.longitude);
-        console.log(location.coords.latitude);
+        // console.log(location.coords.longitude);
+        // console.log(location.coords.latitude);
       })();
     }
   }, [firstRender]);

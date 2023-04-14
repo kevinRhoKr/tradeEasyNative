@@ -155,16 +155,22 @@ const styles = StyleSheet.create({
     color: "black",
     padding: 10,
     fontWeight: "bold",
+    fontSize: 20,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+
   },
   cardDesc: {
     color: "black",
     padding: 10,
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+
   },
   infoText: {
     height: 28,
     justifyContent: "center",
     display: "flex",
     zIndex: -100,
+    
   },
   image: {
     width: "100%",

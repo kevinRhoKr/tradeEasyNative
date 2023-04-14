@@ -10,6 +10,8 @@ import {
   Modal,
   TextInput,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import TinderSwipe from "../components/TinderSwipe";
 import { AntDesign } from "@expo/vector-icons";
@@ -158,54 +160,80 @@ export function MarketPage() {
           }}
         >
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View
-                style={{
-                  alignItems: "center",
-                }}
-              >
-                <TextInput
-                  style={styles.input}
-                  placeholder="Name"
-                  placeholderTextColor="#a9a9a9"
-                  onChangeText={setName}
-                  value={name}
-                ></TextInput>
-                <TextInput
-                  editable
-                  multiline
-                  numberOfLines={5}
-                  style={styles.input}
-                  placeholder="Description"
-                  placeholderTextColor="#a9a9a9"
-                  onChangeText={setDesc}
-                  value={desc}
-                ></TextInput>
-                <Button
-                  title="Pick an image from camera roll"
-                  onPress={pickImage}
-                />
-                {image && (
-                  <Image
-                    source={{ uri: image }}
-                    style={{ width: 200, height: 200 }}
-                  />
-                )}
-              </View>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                Keyboard.dismiss();
+              }}
+            >
+              <View style={styles.modalView}>
+                <View
+                  style={{
+                    alignItems: "stretch",
+                  }}
+                >
+                  <Text style={styles.title}>
+                    Upload new item to the market
+                  </Text>
+                  <Pressable
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: pressed ? "#73BFF3" : "#2FA5F6",
+                      },
+                      styles.imageUpload,
+                    ]}
+                    onPress={pickImage}
+                  >
+                    <Text style={styles.text}>Attach an image</Text>
+                  </Pressable>
+                  {image && (
+                    <Image
+                      source={{ uri: image }}
+                      style={{ width: 200, height: 200, alignSelf: "center" }}
+                    />
+                  )}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Name"
+                    placeholderTextColor="#a9a9a9"
+                    onChangeText={setName}
+                    value={name}
+                  ></TextInput>
+                  <TextInput
+                    editable
+                    multiline
+                    numberOfLines={5}
+                    style={styles.input}
+                    placeholder="Description"
+                    placeholderTextColor="#a9a9a9"
+                    onChangeText={setDesc}
+                    value={desc}
+                  ></TextInput>
+                </View>
 
-              <Pressable
-                style={[styles.button, styles.buttonUpload]}
-                onPress={() => uploadFileToS3(image)}
-              >
-                <Text style={styles.textStyle}>Create new item</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={exit}
-              >
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
-            </View>
+                <Pressable
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed ? "#75EA98" : "#24E05D",
+                    },
+                    styles.button,
+                  ]}
+                  onPress={() => uploadFileToS3(image)}
+                >
+                  <Text style={styles.textStyle}>Upload new item</Text>
+                </Pressable>
+                <Pressable
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed ? "#EA7070" : "#E21F1F",
+                    },
+                    styles.button,
+                  ]}
+                  onPress={exit}
+                >
+                  <Text style={styles.textStyle}>Cancel</Text>
+                </Pressable>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
         </Modal>
       </View>
@@ -262,15 +290,6 @@ const styles = StyleSheet.create({
     margin: 10,
     elevation: 2,
   },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "red",
-  },
-  buttonUpload: {
-    backgroundColor: "green",
-  },
   textStyle: {
     color: "white",
     fontWeight: "bold",
@@ -289,6 +308,12 @@ const styles = StyleSheet.create({
     padding: 10,
     fontFamily: "AppleSDGothicNeo-SemiBold",
   },
+  title: {
+    fontFamily: "AppleSDGothicNeo-SemiBold",
+    fontWeight: "bold",
+    color: "black",
+    fontSize: 20,
+  },
   refresh: {
     paddingVertical: 50,
     paddingHorizontal: 32,
@@ -297,5 +322,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     bottom: 0,
+  },
+  imageUpload: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    alignItems: "center",
+    marginVertical: 10,
   },
 });

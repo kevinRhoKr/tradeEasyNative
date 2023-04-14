@@ -122,18 +122,6 @@ export function SettingPage() {
       <Pressable
         style={({ pressed }) => [
           {
-            backgroundColor: pressed ? "#ED5F5F" : "#FF0000",
-          },
-          styles.button,
-        ]}
-        onPress={handleLogout}
-      >
-        <Text style={styles.text}>Log out</Text>
-      </Pressable>
-
-      <Pressable
-        style={({ pressed }) => [
-          {
             backgroundColor: pressed ? "#00FFFF" : "#008080",
           },
           styles.button,
@@ -176,6 +164,18 @@ export function SettingPage() {
         >
           <Text style={styles.text}>Change Proximity</Text>
         </Pressable>
+
+        <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#ED5F5F" : "#FF0000",
+          },
+          styles.button,
+        ]}
+        onPress={handleLogout}
+      >
+        <Text style={styles.text}>Log out</Text>
+      </Pressable>
       </View>
     </ScrollView>
   );

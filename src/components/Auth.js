@@ -216,7 +216,7 @@ const Auth = () => {
       style={styles.auth}
       contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
     >
-      {isLoadingVisible && <Text style={styles.load}>App Loading.... {"\n"}Please wait to load</Text>}
+      {isLoadingVisible && <Text style={styles.load}>Loading.... {"\n"}Please wait until it loads..</Text>}
       {!isLoadingVisible && (
         <View>
           {error && <Text style={styles.text2}>TradeEasy</Text>}

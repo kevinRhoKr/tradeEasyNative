@@ -36,6 +36,7 @@ export function MarketPage() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [authState, setAuthState] = useContext(AuthContext);
+  const [refresh, setRefresh] = useState(false);
 
   const pressed = () => {
     setIsPressed(!isPressed);
@@ -135,7 +136,16 @@ export function MarketPage() {
         onPress={pressed}
         style={styles.button2}
       />
-      <TinderSwipe></TinderSwipe>
+      <AntDesign
+        name={"download"}
+        size={50}
+        color={isPressed ? "#62CA62" : "green"}
+        onPress={() => {
+          setRefresh(!refresh);
+        }}
+        style={styles.refresh}
+      />
+      <TinderSwipe refresh={refresh}></TinderSwipe>
 
       <View style={styles.centeredView}>
         <Modal
@@ -211,7 +221,7 @@ const styles = StyleSheet.create({
   },
 
   button2: {
-    paddingVertical: 50,
+    paddingVertical: 40,
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
@@ -279,5 +289,13 @@ const styles = StyleSheet.create({
     padding: 10,
     fontFamily: "AppleSDGothicNeo-SemiBold",
   },
-
+  refresh: {
+    paddingVertical: 50,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    alignItems: "center",
+    position: "absolute",
+    bottom: 0,
+  },
 });

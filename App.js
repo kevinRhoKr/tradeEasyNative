@@ -19,11 +19,11 @@ export default function App() {
   return (
     // <ImageBackground source={image} style={styles.image}>
     <AuthContext.Provider value={[authState, setAuthState]}>
-      <NavigationContainer options={{ headerShown: false }}>
-        <View style={styles.container}>
-          {authState.isLoggedIn ? <MyTabs /> : <AuthPage></AuthPage>}
-        </View>
-      </NavigationContainer>
+        <NavigationContainer options={{ headerShown: false }}>
+          <View style={styles.container}>
+            {authState.isLoggedIn ? <MyTabs /> : <AuthPage></AuthPage>}
+          </View>
+        </NavigationContainer>
     </AuthContext.Provider>
     // </ImageBackground>
   );

@@ -5,8 +5,8 @@ import {
   Pressable,
   StyleSheet,
   ScrollView,
-  Slider,
 } from "react-native";
+import Slider from "@react-native-community/slider";
 import { AuthContext } from "../store/AuthContextNew";
 
 export function SettingPage() {

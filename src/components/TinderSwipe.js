@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { ImageBackground, Text, View, StyleSheet, Image } from "react-native";
+import { Pressable, Text, View, StyleSheet, Image, Modal } from "react-native";
 import TinderCard from "react-tinder-card";
 import { AuthContext } from "../store/AuthContextNew";
 
@@ -7,7 +7,13 @@ const TinderSwipe = (props) => {
   const [lastDirection, setLastDirection] = useState();
   const [authState, setAuthState] = useContext(AuthContext);
   const [items, setItems] = useState([]);
+  const [item_idx, setItem_idx] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [fName, setFName] = useState("N/A");
+  const [lName, setLName] = useState("N/A");
   // const [refresh, setRefresh] = useState(false);
+
+  console.log("index: ", item_idx);
 
   useEffect(() => {
     //GET request
@@ -54,6 +60,7 @@ const TinderSwipe = (props) => {
       });
     }
     setItems(item_formatted);
+    setItem_idx(item_formatted.length - 1);
   };
 
   const swiped = (direction, id) => {
@@ -69,7 +76,7 @@ const TinderSwipe = (props) => {
         },
 
         body: JSON.stringify({
-         item_id: id
+          item_id: id,
         }),
       })
         .then((response) => response.json())
@@ -83,18 +90,72 @@ const TinderSwipe = (props) => {
         });
     }
     setLastDirection(direction);
+    setItem_idx((prevState) => prevState - 1);
   };
 
-  const outOfFrame = (name) => {
-    console.log(name + " left the screen!");
+  const handleReportItem = async (item_id) => {
+    console.log("im inside reporter");
+    console.log("here", item_id, item_idx);
+    //this will be reported item_id
+    fetch("https://trade-easy.herokuapp.com/api/v1/reportItem", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authState.token}`,
+      },
+      body: JSON.stringify({ item_id: item_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        alert("Item reported successfully!");
+      })
+      .catch((error) => {
+        //display error message
+        console.log("Report item error");
+        console.warn(error);
+      });
   };
+
+  const viewProfile = () => {
+    console.log(items[item_idx].user);
+    fetch("https://trade-easy.herokuapp.com/api/v1/profile", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authState.token}`,
+      },
+      body: JSON.stringify({
+        email: items[item_idx].user,
+      }),
+    })
+      .then((response) => response.json())
+      //If response is in json then in success
+      .then((responseJson) => {
+        //Success
+        setFName(responseJson.firstName);
+        setLName(responseJson.lastName);
+        console.log(responseJson);
+      })
+      //If response is not in json then in error
+      .catch((error) => {
+        //Error
+        alert(JSON.stringify(error));
+        console.error(error);
+      });
+
+    setVisible(true);
+  };
+
 
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
         {items.map((item) => (
           <TinderCard
-            key={item.name}
+            key={item.item_id}
             onSwipe={(dir) => swiped(dir, item.item_id)}
             // onCardLeftScreen={() => outOfFrame(item.name)}
           >
@@ -106,11 +167,55 @@ const TinderSwipe = (props) => {
           </TinderCard>
         ))}
       </View>
-      {/* {lastDirection ? (
-        <Text style={styles.infoText}>You swiped {lastDirection}</Text>
-      ) : (
-        <Text style={styles.infoText} />
-      )} */}
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#ED5F5F" : "#FF0000",
+          },
+          styles.button,
+        ]}
+        onPress={() => handleReportItem(items[item_idx].item_id)}
+      >
+        <Text style={styles.text}>Report Item</Text>
+      </Pressable>
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#73BFF3" : "#2FA5F6",
+          },
+          styles.profileButton,
+        ]}
+        onPress={viewProfile}
+      >
+        <Text style={styles.text}>View profile</Text>
+      </Pressable>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={visible}
+        onRequestClose={() => {
+          setVisible((prev) => !prev);
+        }}
+      >
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={styles.cardTitle}>Profile</Text>
+          <Text style={styles.cardDesc}>
+            Name: {fName} {lName}
+          </Text>
+          <Pressable
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed ? "#ED5F5F" : "#FF0000",
+              }, styles.closeProfilebButton
+            ]}
+            onPress={() => setVisible((prev) => !prev)}
+          >
+            <Text style={styles.text}>Close</Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -153,24 +258,24 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: "black",
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     fontWeight: "bold",
     fontSize: 20,
     fontFamily: "AppleSDGothicNeo-SemiBold",
-
   },
   cardDesc: {
     color: "black",
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 0,
+    paddingVertical: 0,
     fontFamily: "AppleSDGothicNeo-SemiBold",
-
   },
   infoText: {
     height: 28,
     justifyContent: "center",
     display: "flex",
     zIndex: -100,
-    
   },
   image: {
     width: "100%",
@@ -178,6 +283,36 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 20,
     alignItems: "center",
+  },
+  profileButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    alignItems: "center",
+    marginVertical: 10,
+    position: "absolute",
+    bottom: -200,
+    right: 15,
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    alignItems: "center",
+    marginVertical: 10,
+    position: "absolute",
+    bottom: -200,
+    left: 15,
+  },
+  closeProfilebButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    alignItems: "center",
+    marginVertical: 10,
   },
 });
 

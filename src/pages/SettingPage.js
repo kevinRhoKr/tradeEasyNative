@@ -1,11 +1,5 @@
-import React, { useContext, useState } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { Text, View, Pressable, StyleSheet, ScrollView } from "react-native";
 import Slider from "@react-native-community/slider";
 import { AuthContext } from "../store/AuthContextNew";
 
@@ -62,30 +56,6 @@ export function SettingPage() {
       });
   };
 
-  const handleReportItem = async () => {
-    //this will be reported item_id
-    const item_id = 1;
-    fetch("https://trade-easy.herokuapp.com/api/v1/reportItem", {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authState.token}`,
-      },
-      body: JSON.stringify({ item_id: item_id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        alert("Item reported successfully!");
-      })
-      .catch((error) => {
-        //display error message
-        console.log("Report item error");
-        console.warn(error);
-      });
-  };
-
   const handleProximityChange = (value) => {
     setProximity(value);
   };
@@ -131,18 +101,6 @@ export function SettingPage() {
         <Text style={styles.text}>Report User</Text>
       </Pressable>
 
-      <Pressable
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed ? "#00FFFF" : "#008080",
-          },
-          styles.button,
-        ]}
-        onPress={handleReportItem}
-      >
-        <Text style={styles.text}>Report Item</Text>
-      </Pressable>
-
       <View style={{ marginVertical: 10 }}>
         <Text style={{ fontSize: 16 }}>Location Proximity</Text>
         <Slider
@@ -166,16 +124,16 @@ export function SettingPage() {
         </Pressable>
 
         <Pressable
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed ? "#ED5F5F" : "#FF0000",
-          },
-          styles.button,
-        ]}
-        onPress={handleLogout}
-      >
-        <Text style={styles.text}>Log out</Text>
-      </Pressable>
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed ? "#ED5F5F" : "#FF0000",
+            },
+            styles.button,
+          ]}
+          onPress={handleLogout}
+        >
+          <Text style={styles.text}>Log out</Text>
+        </Pressable>
       </View>
     </ScrollView>
   );

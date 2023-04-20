@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
-import { ChatPage } from "../pages/ChatPage";
 import { MarketPage } from "../pages/MarketPage";
 import { SettingPage } from "../pages/SettingPage";
 import { ReportPage } from "../pages/ReportPage";
 import { AuthContext } from "../store/AuthContextNew";
+import { ChatNav } from "../pages/ChatNav";
+import { ChatPage } from "../pages/ChatPage";
 
 const Tab = createBottomTabNavigator();
 
@@ -65,7 +66,7 @@ export function MyTabs() {
     >
       <Tab.Screen name="Settings" component={SettingPage} />
       <Tab.Screen name="Market" component={MarketPage} />
-      <Tab.Screen name="Chats" component={ChatPage} />
+      <Tab.Screen name="Chats" component={ChatNav} />
       {isSuper && <Tab.Screen name="Reports" component={ReportPage} />}
     </Tab.Navigator>
   );

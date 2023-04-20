@@ -94,7 +94,7 @@ export function ReportPage() {
         <Text style={styles.title}>Users</Text>
         {userReports.length == 0 && <Text style={styles.nameText}>None</Text>}
         {userReports.map((user) => (
-          <View style={styles.card}>
+          <View style={styles.card} key={user.email}>
             <Text style={styles.nameText}>
               {user.first_name} {user.last_name}
             </Text>
@@ -104,6 +104,7 @@ export function ReportPage() {
                 {
                   backgroundColor: pressed ? "#EA7070" : "#E21F1F",
                 },
+                
                 styles.button,
               ]}
               onPress={() => removeUser(user.email)}
@@ -115,7 +116,7 @@ export function ReportPage() {
         <Text style={styles.title}>Items</Text>
         {itemReports.length == 0 && <Text style={styles.nameText}>None</Text>}
         {itemReports.map((item) => (
-          <View style={styles.itemCard}>
+          <View style={styles.itemCard} key={item.item_id}>
             <Text style={styles.nameText}>
               {item.name} (Item ID: {item.item_id})
             </Text>

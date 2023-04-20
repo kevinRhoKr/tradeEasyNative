@@ -18,6 +18,7 @@
     "@react-navigation/stack": "^6.3.16",
     "@react-spring/native": "^9.5.5",
     "aws-sdk": "^2.1357.0",
+    "body-parser": "^1.20.2",
     "bootstrap": "^5.2.3",
     "expo": "~48.0.10",
     "expo-app-loading": "^2.1.1",
@@ -27,21 +28,31 @@
     "expo-location": "~15.1.1",
     "expo-splash-screen": "~0.18.1",
     "expo-status-bar": "~1.4.4",
+    "express": "^4.18.2",
+    "firebase": "^9.20.0",
+    "firebase-admin": "^11.7.0",
+    "nodemailer": "^6.9.1",
     "react": "18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-native": "0.71.6",
     "react-native-aws3": "^0.0.9",
     "react-native-bootstrap": "^0.1.0",
     "react-native-bootstrap-styles": "^4.5.0-r",
+    "react-native-firebase": "^5.6.0",
     "react-native-get-location": "^3.0.1",
     "react-native-get-random-values": "^1.8.0",
     "react-native-image-picker": "^5.3.1",
+    "react-native-push-notification": "^8.1.1",
+    "react-native-tcp": "^4.0.0",
     "react-native-upload-aws-s3": "^0.8.1",
     "react-tinder-card": "^1.6.2",
+    "smtp-connection": "^4.0.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@react-native-community/push-notification-ios": "^1.11.0",
+    "react-native-fs": "^2.20.0"
   },
   "private": true
 }

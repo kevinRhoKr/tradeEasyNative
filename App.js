@@ -5,6 +5,24 @@ import { AuthContext } from "./src/store/AuthContextNew";
 import AuthPage from "./src/pages/AuthPage";
 import { NavigationContainer } from "@react-navigation/native";
 import { MyTabs } from "./src/components/NavBar";
+//import PushNotification from 'react-native-push-notification';
+
+// PushNotification.configure({
+//   onRegister: function (token) {
+//     console.log("TOKEN:", token);
+//   },
+//   onNotification: function (notification) {
+//     console.log("NOTIFICATION:", notification);
+//   },
+//   permissions: {
+//     alert: true,
+//     badge: true,
+//     sound: true,
+//   },
+//   popInitialNotification: true,
+//   requestPermissions: true,
+// });
+
 
 const image = {
   uri: "https://www.setaswall.com/wp-content/uploads/2021/06/Gradient-Phone-Wallpaper-009.jpg",

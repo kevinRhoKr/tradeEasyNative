@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Pressable, Text, View, StyleSheet, Image, Modal } from "react-native";
+import {Pressable, Text, View, StyleSheet, Image, Modal} from "react-native";
 import TinderCard from "react-tinder-card";
 import { AuthContext } from "../store/AuthContextNew";
+
 
 const TinderSwipe = (props) => {
   const [lastDirection, setLastDirection] = useState();
@@ -82,6 +83,7 @@ const TinderSwipe = (props) => {
         .then((response) => response.json())
         .then((responseJson) => {
           console.log("Success: ", responseJson);
+          //end of email
         })
         .catch((error) => {
           //display error message
@@ -147,14 +149,17 @@ const TinderSwipe = (props) => {
       });
 
     setVisible(true);
+
   };
 
 
   return (
-    <View style={styles.container}>
+
+      <View style={styles.container}>
       <View style={styles.cardContainer}>
         {items.map((item) => (
           <TinderCard
+            preventSwipe={["up", "down"]} //so can only move left/right
             key={item.item_id}
             onSwipe={(dir) => swiped(dir, item.item_id)}
             // onCardLeftScreen={() => outOfFrame(item.name)}

@@ -7,7 +7,30 @@ export function SettingPage() {
   const [authState, setAuthState] = useContext(AuthContext);
   const [error, setError] = useState(false);
   const [proximity, setProximity] = useState(5);
+  const [fname, setName] = useState("");
+  const [curProximity, setCurProximity] = useState("");
 
+
+  useEffect(() => {
+    fetch("https://trade-easy.herokuapp.com/api/v1/getuserdetails", {
+        method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authState.token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // logout successful
+        setName(data.f_name);
+        setCurProximity(data.proximity);
+        setProximity(data.proximity);
+      })
+      .catch((error) => {
+        console.log("Get user details error");
+      });
+  }, []);
   const handleLogout = async () => {
     fetch("https://trade-easy.herokuapp.com/auth/logout", {
       method: "POST",
@@ -74,6 +97,7 @@ export function SettingPage() {
       .then((data) => {
         console.log(data);
         alert("Proximity sucessfully changed to " + proximity + " miles");
+        setCurProximity(proximity);
       })
       .catch((error) => {
         //display error message
@@ -82,11 +106,12 @@ export function SettingPage() {
       });
   };
 
+
   return (
     <ScrollView style={{ flex: 1, padding: 50 }}>
       {/*  need api call to get name and current proximity*/}
       <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-        Hello {authState.name}
+        Hello {fname}
       </Text>
 
       <Pressable
@@ -103,11 +128,13 @@ export function SettingPage() {
 
       <View style={{ marginVertical: 10 }}>
         <Text style={{ fontSize: 16 }}>Location Proximity</Text>
+        <Text>Current Proximity: {curProximity} miles</Text>
+
         <Slider
           minimumValue={1}
           maximumValue={15}
           step={1}
-          value={proximity}
+          value={curProximity}
           onValueChange={handleProximityChange}
         />
         <Text>{proximity} miles</Text>

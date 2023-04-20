@@ -17,6 +17,7 @@ import { AuthContext } from "../store/AuthContextNew";
 // import GetLocation from 'react-native-get-location'
 import * as Location from "expo-location";
 
+
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
